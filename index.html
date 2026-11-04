@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,278 +6,406 @@
 <title>Yasmina Showdown</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+:root{--purple:#5b4bdb;--lime:#ddf56b;--bg:#f3f2fa;--ink:#19182a;--muted:#77758b;--line:#e8e6f1}
 *{box-sizing:border-box}
-body{margin:0;background:#f3f2fa;color:#19182a;font-family:Arial,sans-serif}
-header{background:#5b4bdb;color:white;padding:28px 20px}
-header small{color:#ddf56b;font-weight:bold;letter-spacing:2px}
-h1{font-size:clamp(38px,8vw,65px);margin:12px 0}
-header p{max-width:600px;line-height:1.6}
-main{max-width:1050px;margin:auto;padding:22px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
-.panel{background:white;border:1px solid #e5e2ef;border-radius:18px;padding:19px;margin-bottom:18px}
-h2{margin:0 0 8px}
-.sub,.note{color:#77758b;font-size:13px;line-height:1.5}
-input,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font:inherit;margin:5px 0}
-textarea{min-height:75px}
-button{background:#5b4bdb;color:white;border:0;border-radius:10px;padding:11px 15px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-.secondary{background:#eee;color:#25233a}
-.fight{background:#5b4bdb;color:white;border-radius:14px;padding:18px;text-align:center;margin:14px 0}
-.fight strong{font-size:23px}
-.vote{display:flex;justify-content:space-between;align-items:center;border:1px solid #ddd;border-radius:12px;padding:13px;margin:9px 0}
-.post,.message,.feedback,.rank{background:#f5f4fa;padding:13px;border-radius:12px;margin:10px 0;overflow-wrap:anywhere}
-.post small{color:#5b4bdb;font-weight:bold}
-.post h3{margin:7px 0}
-.message strong,.feedback strong{display:block;font-size:12px;margin-bottom:5px}
-#chatMessages{height:260px;overflow:auto}
-.row{display:flex;gap:7px}
-.row input{flex:1;min-width:0}
-.status{font-size:12px;color:#777;margin-top:9px}
-footer{text-align:center;padding:25px;color:#777;font-size:12px}
-@media(max-width:700px){main{grid-template-columns:1fr;padding:13px}.panel{padding:15px}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial, sans-serif}
+header{background:var(--purple);color:white;padding:25px max(20px,calc((100% - 1100px)/2))}
+.brand{font-weight:900;font-size:19px}
+.live{float:right;background:#ffffff25;padding:8px 12px;border-radius:30px;font-size:12px}
+.hero{padding:40px 0 20px;max-width:700px}
+.eyebrow{color:var(--lime);font-weight:bold;font-size:12px;letter-spacing:2px}
+h1{font-size:clamp(40px,8vw,68px);line-height:.95;margin:12px 0;letter-spacing:-3px}
+.hero p{line-height:1.6;color:#eee}
+main{max-width:1100px;margin:auto;padding:25px 18px 50px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start}
+.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px}
+h2{font-size:20px;margin:0 0 6px}
+.sub{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 16px}
+.pill{font-size:11px;color:var(--muted);background:#f2f1f8;padding:7px 10px;border-radius:20px}
+.chathead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;font:inherit;background:white;color:var(--ink);margin-bottom:8px}
+textarea{min-height:85px;resize:vertical}
+button{border:0;border-radius:11px;background:var(--purple);color:white;padding:11px 15px;font-weight:bold;font:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.secondary{background:#f1f0f8;color:var(--ink);border:1px solid var(--line)}
+.lime{background:var(--lime);color:#20240c}
+.messages{height:270px;overflow:auto;background:#f7f6fc;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:9px;margin:10px 0}
+.msg{background:white;border:1px solid var(--line);padding:10px 12px;border-radius:12px;max-width:90%;overflow-wrap:anywhere}
+.msg strong{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.msg span{font-size:14px;line-height:1.4}
+.chatform{display:flex;gap:8px}
+.chatform input{margin:0;min-width:0}
+.chatform button{flex-shrink:0}
+.fight{background:var(--purple);color:white;padding:18px;border-radius:15px;margin:14px 0}
+.fight small{color:var(--lime);font-weight:bold;letter-spacing:1px}
+.fighters{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;font-size:20px;font-weight:900}
+.vs{color:var(--lime);font-size:13px}
+.vote{padding:13px;border:1px solid var(--line);border-radius:12px;margin-top:9px;display:flex;justify-content:space-between;cursor:pointer}
+.vote.selected{border:2px solid var(--purple);background:#f4f2ff}
+.bar{height:7px;background:#eee;border-radius:20px;margin-top:7px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--purple);width:0}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+.announcement{background:#f7f6fc;border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:11px}
+.tag{font-size:10px;color:var(--purple);font-weight:900;text-transform:uppercase;letter-spacing:1px}
+.announcement h3{margin:7px 0;font-size:16px}
+.announcement p{font-size:13px;line-height:1.5;white-space:pre-wrap;margin:0}
+.feedbackitem{background:#f7f6fc;border-radius:11px;padding:11px;margin-top:8px;font-size:13px;overflow-wrap:anywhere}
+.feedbackitem strong{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.rankrow{display:flex;gap:10px;align-items:center;background:#f7f6fc;border-radius:11px;padding:11px;margin-top:8px}
+.ranknum{width:25px;color:var(--muted);font-weight:bold}
+.rankname{flex:1;font-weight:bold}
+.rankscore{color:var(--purple);font-weight:900}
+.ownerbox{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+.status{font-size:12px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+@media(max-width:740px){.grid{grid-template-columns:1fr}.hero{padding-top:30px}}
 </style>
 </head>
 <body>
 <header>
-<small>THE FICTIONAL RIVALRY CONTINUES</small>
-<h1>YASMINA<br>SHOWDOWN.</h1>
-<p>Mr Osama vs Mr Ali. Follow announcements, share your theories, and vote for your winner!</p>
+  <div class="brand">YASMINA SHOWDOWN ✳ <span class="live">● THE FIGHT IS ON</span></div>
+  <div class="hero">
+    <div class="eyebrow">THE FICTIONAL RIVALRY CONTINUES</div>
+    <h1>YASMINA<br>SHOWDOWN.</h1>
+    <p>Mr Osama vs Mr Ali. Follow announcements, discuss the latest moments and make your prediction.</p>
+  </div>
 </header>
 
 <main>
+<div class="grid">
 <div>
-<section class="panel">
-<h2>Latest announcements 📢</h2>
-<p class="sub">Official updates and sneak peeks.</p>
-<div id="announcements"><p class="sub">Loading announcements...</p></div>
-</section>
+  <section class="panel">
+    <div class="chathead"><div><h2>Latest announcements</h2><p class="sub">Official updates and sneak peeks.</p></div><span class="pill">NEWS</span></div>
+    <div id="announcementList"><p class="sub">Loading announcements...</p></div>
+  </section>
 
-<section class="panel">
-<h2>Showdown chat 💬</h2>
-<p class="sub">Discuss the latest moments. Keep it friendly.</p>
-<input id="chatName" maxlength="20" placeholder="Your nickname">
-<div id="chatMessages">Loading chat...</div>
-<form id="chatForm">
-<div class="row">
-<input id="chatInput" maxlength="240" placeholder="Write a message..." required>
-<button>Send</button>
-</div>
-</form>
-<p class="status" id="chatStatus"></p>
-</section>
+  <section class="panel">
+    <div class="chathead"><div><h2>Showdown chat</h2><p class="sub">Talk about the rivalry. Keep it friendly.</p></div><span class="pill">LIVE CHAT</span></div>
+    <input id="chatName" maxlength="20" placeholder="Your nickname">
+    <div class="messages" id="messages">Loading chat...</div>
+    <form class="chatform" id="chatForm">
+      <input id="chatInput" maxlength="240" placeholder="Write a message..." required>
+      <button type="submit">Send ↗</button>
+    </form>
+    <p class="note">Messages are shared with everyone visiting the website.</p>
+  </section>
 </div>
 
 <div>
-<section class="panel">
-<h2>Who wins? 🏆</h2>
-<div class="fight"><small>MAIN EVENT</small><br><strong>MR OSAMA VS MR ALI</strong></div>
-<div class="vote">
-<strong>🟣 Mr Osama</strong>
-<span id="osamaCount">0 votes</span>
-<button type="button" onclick="vote('Osama')">Vote</button>
-</div>
-<div class="vote">
-<strong>🟢 Mr Ali</strong>
-<span id="aliCount">0 votes</span>
-<button type="button" onclick="vote('Ali')">Vote</button>
-</div>
-<p class="status" id="voteStatus">Votes are shared online.</p>
-</section>
+  <section class="panel">
+    <h2>Who wins?</h2><p class="sub">Cast your prediction.</p>
+    <div class="fight"><small>MAIN EVENT · FICTIONAL</small><div class="fighters"><span>MR OSAMA</span><span class="vs">VS</span><span>MR ALI</span></div></div>
+    <div class="vote" id="voteOsama"><strong>🟣 Mr Osama</strong><span id="osamaCount">0 votes</span></div>
+    <div class="bar"><span id="osamaBar"></span></div>
+    <div class="vote" id="voteAli"><strong>🟢 Mr Ali</strong><span id="aliCount">0 votes</span></div>
+    <div class="bar"><span id="aliBar"></span></div>
+    <p class="note" id="voteNote">Your vote is saved on this device.</p>
+  </section>
 
-<section class="panel">
-<h2>Feedback box 💡</h2>
-<p class="sub">Got an idea for the website?</p>
-<form id="feedbackForm">
-<input id="feedbackName" maxlength="20" placeholder="Your nickname">
-<textarea id="feedbackText" maxlength="400" placeholder="Your idea..." required></textarea>
-<button>Send feedback</button>
-</form>
-<div id="feedbackList"></div>
-</section>
+  <section class="panel">
+    <h2>Feedback box</h2><p class="sub">What should we add to the website?</p>
+    <form id="feedbackForm">
+      <input id="feedbackName" maxlength="20" placeholder="Your nickname">
+      <textarea id="feedbackText" maxlength="400" placeholder="Write your feedback..." required></textarea>
+      <button class="lime" type="submit">Send feedback</button>
+    </form>
+    <div id="feedbackList"></div>
+  </section>
 
-<section class="panel">
-<h2>Hall of rankings ⭐</h2>
-<p class="sub">Official leaderboard.</p>
-<div id="rankings">Loading rankings...</div>
-<p class="note">Rankings are managed by the site owner.</p>
-</section>
+  <section class="panel">
+    <h2>Hall of rankings</h2><p class="sub">The official leaderboard.</p>
+    <div id="rankList">Loading rankings...</div>
+    <div style="margin-top:14px"><button class="secondary" id="ownerLogin">Owner login 🔒</button></div>
+
+    <div class="ownerbox" id="ownerBox" hidden>
+      <h2>Owner controls</h2>
+      <p class="sub">Only your owner account can publish updates and award points.</p>
+      <form id="loginForm">
+        <input id="ownerEmail" type="email" placeholder="Owner email" required>
+        <input id="ownerPassword" type="password" placeholder="Owner password" required>
+        <button type="submit">Log in</button>
+      </form>
+      <button class="secondary" id="logoutButton" type="button" hidden>Log out</button>
+
+      <div id="ownerTools" hidden>
+        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+        <h3>Publish an update</h3>
+        <select id="postType"><option>Announcement</option><option>Sneak Peek</option><option>Big Moment</option></select>
+        <input id="postTitle" maxlength="70" placeholder="Post title">
+        <textarea id="postBody" maxlength="500" placeholder="Write your update..."></textarea>
+        <button class="lime" id="publishPost" type="button">Publish update</button>
+        <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+        <h3>Award ranking points</h3>
+        <input id="rankFriend" maxlength="20" placeholder="Friend's name">
+        <input id="rankPoints" type="number" min="1" max="1000" value="10" placeholder="Points">
+        <button id="addPoints" type="button">Award points</button>
+      </div>
+      <p class="status" id="ownerStatus"></p>
+    </div>
+  </section>
+</div>
 </div>
 </main>
-
 <footer>YASMINA SHOWDOWN · Follow the fictional rivalry.</footer>
 
 <script>
+'use strict';
+
 const SUPABASE_URL = 'https://huqzhkfxknnamyqrvecx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Xq-efPMw3gWmm4CU2_ZNtA_KQ2q6cmk';
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const ownerUID = '66ec0732-bd6b-4a42-b0f9-8b1d8371ee11';
 
-const el = id => document.getElementById(id);
-const safe = value => String(value ?? '');
-
-function showError(where,error){
-  console.error(where,error);
-  el(where).textContent = 'Could not load this section. Please refresh.';
+function showStatus(message) {
+  $('ownerStatus').textContent = message;
 }
 
-async function loadAnnouncements(){
-  const {data,error}=await db.from('announcements')
-    .select('id,title,body,post_type,created_at')
-    .order('created_at',{ascending:false});
-  if(error) return showError('announcements',error);
-  const box=el('announcements');
-  box.replaceChildren();
-  if(!data.length){
-    box.textContent='No announcements yet. Check back soon!';
+function safeText(value) {
+  return String(value ?? '');
+}
+
+async function loadAnnouncements() {
+  const {data,error} = await db.from('announcements')
+    .select('*').order('created_at',{ascending:false});
+  if(error) {
+    $('announcementList').textContent = 'Could not load announcements: ' + error.message;
     return;
   }
-  data.forEach(post=>{
-    const article=document.createElement('article');
-    article.className='post';
-    const tag=document.createElement('small');
-    tag.textContent=safe(post.post_type);
-    const title=document.createElement('h3');
-    title.textContent=safe(post.title);
-    const body=document.createElement('p');
-    body.textContent=safe(post.body);
+  $('announcementList').replaceChildren();
+  if(!data.length) {
+    $('announcementList').textContent = 'No announcements yet. Check back soon!';
+    return;
+  }
+  data.forEach(post => {
+    const article = document.createElement('article');
+    article.className = 'announcement';
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = safeText(post.post_type);
+    const title = document.createElement('h3');
+    title.textContent = safeText(post.title);
+    const body = document.createElement('p');
+    body.textContent = safeText(post.body);
     article.append(tag,title,body);
-    box.append(article);
+    $('announcementList').append(article);
   });
 }
 
-async function loadChat(){
-  const {data,error}=await db.from('chat_messages')
-    .select('nickname,message,created_at')
-    .order('created_at',{ascending:true}).limit(70);
-  if(error) return showError('chatMessages',error);
-  const box=el('chatMessages');
-  box.replaceChildren();
-  data.forEach(item=>{
-    const div=document.createElement('div');
-    div.className='message';
-    const name=document.createElement('strong');
-    name.textContent=safe(item.nickname);
-    const msg=document.createElement('span');
-    msg.textContent=safe(item.message);
-    div.append(name,msg);
-    box.append(div);
-  });
-  box.scrollTop=box.scrollHeight;
-}
-
-el('chatForm').addEventListener('submit',async event=>{
-  event.preventDefault();
-  const nickname=el('chatName').value.trim()||'Guest';
-  const message=el('chatInput').value.trim();
-  if(!message)return;
-  const button=event.submitter;
-  button.disabled=true;
-  el('chatStatus').textContent='Sending...';
-  const {error}=await db.from('chat_messages').insert({nickname,message});
-  button.disabled=false;
-  if(error){
-    el('chatStatus').textContent='Message not sent. Please try again.';
-    console.error(error);
+async function loadChat() {
+  const {data,error} = await db.from('chat_messages')
+    .select('*').order('created_at',{ascending:true}).limit(100);
+  if(error) {
+    $('messages').textContent = 'Could not load chat: ' + error.message;
     return;
   }
-  el('chatInput').value='';
-  el('chatStatus').textContent='Message sent!';
-  await loadChat();
+  $('messages').replaceChildren();
+  data.forEach(item => {
+    const bubble = document.createElement('div');
+    bubble.className = 'msg';
+    const author = document.createElement('strong');
+    author.textContent = safeText(item.nickname);
+    const message = document.createElement('span');
+    message.textContent = safeText(item.message);
+    bubble.append(author,message);
+    $('messages').append(bubble);
+  });
+  $('messages').scrollTop = $('messages').scrollHeight;
+}
+
+$('chatForm').addEventListener('submit',async event => {
+  event.preventDefault();
+  const nickname = $('chatName').value.trim() || 'Guest';
+  const message = $('chatInput').value.trim();
+  if(!message) return;
+  const button = event.submitter;
+  button.disabled = true;
+  const {error} = await db.from('chat_messages').insert({nickname,message});
+  button.disabled = false;
+  if(error) { alert('Message failed: ' + error.message); return; }
+  $('chatInput').value = '';
+  loadChat();
 });
 
-let voting=false;
-async function vote(choice){
-  if(voting)return;
-  voting=true;
-  el('voteStatus').textContent='Saving your vote...';
-  const {error}=await db.from('votes').insert({choice});
-  voting=false;
-  if(error){
-    el('voteStatus').textContent='Vote could not be saved.';
-    console.error(error);
+async function loadVotes() {
+  const {data,error} = await db.from('votes').select('choice');
+  if(error) { $('voteNote').textContent = 'Could not load votes.'; return; }
+  const osama = data.filter(v => v.choice === 'Osama').length;
+  const ali = data.filter(v => v.choice === 'Ali').length;
+  const total = osama + ali;
+  $('osamaCount').textContent = osama + (osama === 1 ? ' vote' : ' votes');
+  $('aliCount').textContent = ali + (ali === 1 ? ' vote' : ' votes');
+  $('osamaBar').style.width = (total ? osama / total * 100 : 0) + '%';
+  $('aliBar').style.width = (total ? ali / total * 100 : 0) + '%';
+}
+
+async function castVote(choice) {
+  if(localStorage.getItem('yasmina-voted')) {
+    $('voteNote').textContent = 'You have already voted on this device.';
     return;
   }
-  el('voteStatus').textContent='Your vote has been counted!';
+  const {error} = await db.from('votes').insert({choice});
+  if(error) { $('voteNote').textContent = 'Vote failed: ' + error.message; return; }
+  localStorage.setItem('yasmina-voted',choice);
+  $('voteNote').textContent = 'Your vote for Mr ' + choice + ' has been saved!';
   await loadVotes();
 }
-window.vote=vote;
+$('voteOsama').addEventListener('click',()=>castVote('Osama'));
+$('voteAli').addEventListener('click',()=>castVote('Ali'));
 
-async function loadVotes(){
-  const {data,error}=await db.from('votes').select('choice');
-  if(error)return showError('voteStatus',error);
-  const osama=data.filter(v=>v.choice==='Osama').length;
-  const ali=data.filter(v=>v.choice==='Ali').length;
-  el('osamaCount').textContent=osama+' votes';
-  el('aliCount').textContent=ali+' votes';
+async function loadFeedback() {
+  const {data,error} = await db.from('feedback')
+    .select('*').order('created_at',{ascending:false}).limit(30);
+  if(error) { $('feedbackList').textContent = 'Could not load feedback.'; return; }
+  $('feedbackList').replaceChildren();
+  data.forEach(item => {
+    const box = document.createElement('div');
+    box.className = 'feedbackitem';
+    const name = document.createElement('strong');
+    name.textContent = safeText(item.nickname);
+    const message = document.createElement('span');
+    message.textContent = safeText(item.message);
+    box.append(name,message);
+    $('feedbackList').append(box);
+  });
 }
-
-el('feedbackForm').addEventListener('submit',async event=>{
+$('feedbackForm').addEventListener('submit',async event => {
   event.preventDefault();
-  const nickname=el('feedbackName').value.trim()||'Anonymous';
-  const message=el('feedbackText').value.trim();
-  if(!message)return;
-  const button=event.submitter;
-  button.disabled=true;
-  const {error}=await db.from('feedback').insert({nickname,message});
-  button.disabled=false;
-  if(error){
-    alert('Feedback could not be sent. Please try again.');
-    console.error(error);
-    return;
-  }
-  el('feedbackText').value='';
-  await loadFeedback();
+  const nickname = $('feedbackName').value.trim() || 'Anonymous';
+  const message = $('feedbackText').value.trim();
+  if(!message) return;
+  const {error} = await db.from('feedback').insert({nickname,message});
+  if(error) { alert('Feedback failed: ' + error.message); return; }
+  $('feedbackText').value = '';
+  loadFeedback();
 });
 
-async function loadFeedback(){
-  const {data,error}=await db.from('feedback')
-    .select('nickname,message,created_at')
-    .order('created_at',{ascending:false}).limit(20);
-  if(error)return showError('feedbackList',error);
-  const box=el('feedbackList');
-  box.replaceChildren();
-  data.forEach(item=>{
-    const div=document.createElement('div');
-    div.className='feedback';
-    const name=document.createElement('strong');
-    name.textContent=safe(item.nickname);
-    const msg=document.createElement('span');
-    msg.textContent=safe(item.message);
-    div.append(name,msg);
-    box.append(div);
+async function loadRankings() {
+  const {data,error} = await db.from('rankings')
+    .select('*').order('points',{ascending:false});
+  if(error) { $('rankList').textContent = 'Could not load rankings: ' + error.message; return; }
+  $('rankList').replaceChildren();
+  if(!data.length) {
+    $('rankList').textContent = 'No rankings yet.';
+    return;
+  }
+  data.forEach((item,index) => {
+    const row = document.createElement('div');
+    row.className = 'rankrow';
+    const number = document.createElement('span');
+    number.className = 'ranknum';
+    number.textContent = '#' + (index+1);
+    const name = document.createElement('span');
+    name.className = 'rankname';
+    name.textContent = safeText(item.nickname);
+    const score = document.createElement('span');
+    score.className = 'rankscore';
+    score.textContent = safeText(item.points) + ' pts';
+    row.append(number,name,score);
+    $('rankList').append(row);
   });
 }
 
-async function loadRankings(){
-  const {data,error}=await db.from('rankings')
-    .select('nickname,points').order('points',{ascending:false});
-  if(error)return showError('rankings',error);
-  const box=el('rankings');
-  box.replaceChildren();
-  if(!data.length){box.textContent='No rankings yet.';return;}
-  data.forEach((item,index)=>{
-    const div=document.createElement('div');
-    div.className='rank';
-    div.textContent='#'+(index+1)+'  '+safe(item.nickname)+' — '+item.points+' pts';
-    box.append(div);
+function updateOwnerUI(session) {
+  const loggedIn = !!session && session.user.id === ownerUID;
+  $('ownerTools').hidden = !loggedIn;
+  $('logoutButton').hidden = !loggedIn;
+  $('loginForm').hidden = loggedIn;
+  if(loggedIn) showStatus('Owner mode unlocked.');
+  else showStatus(session ? 'This account is not the owner account.' : 'Log in with your owner account.');
+}
+
+$('ownerLogin').addEventListener('click',async () => {
+  $('ownerBox').hidden = !$('ownerBox').hidden;
+  if(!$('ownerBox').hidden) {
+    const {data} = await db.auth.getSession();
+    updateOwnerUI(data.session);
+  }
+});
+
+$('loginForm').addEventListener('submit',async event => {
+  event.preventDefault();
+  const email = $('ownerEmail').value.trim();
+  const password = $('ownerPassword').value;
+  showStatus('Logging in...');
+  const {data,error} = await db.auth.signInWithPassword({email,password});
+  if(error) {
+    showStatus('Login error: ' + error.message);
+    return;
+  }
+  if(data.user.id !== ownerUID) {
+    await db.auth.signOut();
+    showStatus('That account is not authorised as the owner.');
+    return;
+  }
+  updateOwnerUI(data.session);
+});
+
+$('logoutButton').addEventListener('click',async () => {
+  await db.auth.signOut();
+  showStatus('You are logged out.');
+});
+
+$('publishPost').addEventListener('click',async () => {
+  const title = $('postTitle').value.trim();
+  const body = $('postBody').value.trim();
+  if(!title || !body) { showStatus('Enter a title and update text.'); return; }
+  const {data:{session}} = await db.auth.getSession();
+  if(!session || session.user.id !== ownerUID) {
+    showStatus('Please log in as the owner first.');
+    return;
+  }
+  const {error} = await db.from('announcements').insert({
+    title,body,post_type:$('postType').value
   });
-}
-
-async function start(){
-  const results=await Promise.allSettled([
-    loadAnnouncements(),loadChat(),loadVotes(),
-    loadFeedback(),loadRankings()
-  ]);
-  console.log('Yasmina Showdown connected to Supabase.',results);
-}
-start();
-
-// Refresh shared information regularly for visitors.
-setInterval(()=>{
+  if(error) { showStatus('Publish error: ' + error.message); return; }
+  $('postTitle').value = '';
+  $('postBody').value = '';
+  showStatus('Update published successfully!');
   loadAnnouncements();
-  loadChat();
-  loadVotes();
-  loadFeedback();
+});
+
+$('addPoints').addEventListener('click',async () => {
+  const nickname = $('rankFriend').value.trim();
+  const points = Number($('rankPoints').value);
+  if(!nickname || !Number.isInteger(points) || points < 1 || points > 1000) {
+    showStatus('Enter a name and points between 1 and 1000.');
+    return;
+  }
+  const {data:{session}} = await db.auth.getSession();
+  if(!session || session.user.id !== ownerUID) {
+    showStatus('Please log in as the owner first.');
+    return;
+  }
+  const {data:existing,error:findError} = await db.from('rankings')
+    .select('*').eq('nickname',nickname).limit(1);
+  if(findError) { showStatus('Ranking error: ' + findError.message); return; }
+
+  let result;
+  if(existing && existing.length) {
+    result = await db.from('rankings')
+      .update({points:Number(existing[0].points)+points})
+      .eq('id',existing[0].id);
+  } else {
+    result = await db.from('rankings').insert({nickname,points});
+  }
+  if(result.error) { showStatus('Could not award points: ' + result.error.message); return; }
+  $('rankFriend').value = '';
+  showStatus('Points awarded!');
   loadRankings();
-},10000);
+});
+
+db.auth.getSession().then(({data})=>updateOwnerUI(data.session));
+db.auth.onAuthStateChange((_event,session)=>updateOwnerUI(session));
+
+async function refreshAll() {
+  await Promise.all([
+    loadAnnouncements(),loadChat(),loadVotes(),loadFeedback(),loadRankings()
+  ]);
+}
+refreshAll();
+setInterval(refreshAll,10000);
 </script>
 </body>
 </html>
