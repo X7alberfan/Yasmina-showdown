@@ -1,353 +1,285 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yasmina Showdown — Mr Osama vs Mr Ali</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yasmina Showdown</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --p:#5B4BDB; --lime:#DDF56B; --bg:#F3F2FA;
-  --ink:#19182A; --muted:#77758B; --line:#E8E6F1;
-  --surface:#fff; --surface2:#F7F6FC;
-}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
-header{background:var(--p);color:white;padding:24px max(22px,calc((100vw - 1120px)/2))}
-.topline,.chat-head,.fighters{display:flex;justify-content:space-between;align-items:center;gap:14px}
-.brand{font-weight:900;font-size:20px;letter-spacing:-.04em}
-.live,.pill{font-size:11px;font-weight:800;padding:8px 11px;border-radius:99px;background:#ffffff25}
-.hero{padding:42px 0 22px;max-width:760px}
-.eyebrow{color:var(--lime);font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
-h1{font-size:clamp(38px,7vw,66px);line-height:.98;letter-spacing:-.065em;margin:13px 0}
-.hero p{color:#ffffffcc;line-height:1.6;max-width:560px}
-main{max-width:1120px;margin:auto;padding:28px 22px 60px}
-.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:18px;align-items:start}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 10px 30px #1e19460b}
-.panel h2{margin:0 0 5px;font-size:20px;letter-spacing:-.035em}
-.sub,.note{color:var(--muted);font-size:13px;line-height:1.5}
-.sub{margin:0 0 18px}
-.side{display:flex;flex-direction:column;gap:18px}
-.announcement-list,.feedback-list,.rank-list{display:grid;gap:12px}
-.announcement,.feedback-item{border:1px solid var(--line);background:var(--surface2);padding:14px;border-radius:14px}
-.tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.1em;color:var(--p);text-transform:uppercase;margin-bottom:7px}
-.announcement h3{margin:0 0 6px;font-size:16px}
-.announcement p{margin:0;font-size:13px;line-height:1.5;white-space:pre-wrap}
-.reaction{margin-top:10px}
-.reaction button{padding:7px 10px;font-size:12px}
-button{border:0;border-radius:12px;padding:11px 15px;background:var(--p);color:white;font:inherit;font-weight:800;cursor:pointer}
-button.secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
-button.lime{background:var(--lime);color:#20240C}
-input,textarea,select{width:100%;border:1px solid var(--line);background:white;color:var(--ink);border-radius:12px;padding:12px 13px;font:inherit}
-textarea{min-height:82px;resize:vertical}
-.feedback-form{display:grid;gap:9px}
-.fight-card{background:var(--p);color:white;border-radius:17px;padding:18px;margin-bottom:14px}
-.fight-card small{color:var(--lime);font-weight:900;letter-spacing:.14em}
-.fighter{font-size:clamp(19px,4vw,25px);font-weight:950;letter-spacing:-.05em}
-.vs{color:var(--lime);font-size:13px;font-weight:900}
-.vote-option{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-top:9px;cursor:pointer}
-.vote-option.selected{border:2px solid var(--p);background:#5B4BDB12}
-.vote-option strong{font-size:14px}
-.vote-option small{color:var(--muted)}
-.bar{height:7px;background:var(--surface2);border-radius:20px;margin-top:8px;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--p);width:0}
-.messages{height:240px;overflow:auto;background:var(--surface2);border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:11px}
-.msg{max-width:85%;background:white;border:1px solid var(--line);border-radius:14px;padding:9px 12px;overflow-wrap:anywhere}
-.msg.mine{align-self:flex-end;background:var(--p);color:white}
-.msg strong{display:block;font-size:11px;opacity:.72;margin-bottom:3px}
-.msg span{font-size:14px;line-height:1.4}
-.name-row{margin-bottom:10px}
-.chat-form{display:flex;gap:8px;margin-top:11px}
-.feedback-item{font-size:13px;overflow-wrap:anywhere}
-.feedback-item strong{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}
-.rank-row{display:flex;align-items:center;gap:11px;background:var(--surface2);padding:11px;border-radius:13px}
-.rank-num{font-size:13px;color:var(--muted);font-weight:900;width:22px}
-.rank-name{font-weight:850;flex:1}
-.rank-score{color:var(--p);font-weight:950}
-.owner-box{margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
-.owner-box[hidden],[hidden]{display:none!important}
-.owner-controls{display:grid;grid-template-columns:1fr 90px auto;gap:7px;margin-top:9px}
-.owner-controls input{min-width:0;padding:10px}
-.owner-status{font-size:11px;color:var(--muted);margin-top:7px}
-.note{font-size:11px;margin-top:12px}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 20px 30px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding-top:32px}}
-@media(max-width:420px){.panel{padding:17px}.owner-controls{grid-template-columns:1fr 74px}.owner-controls button{grid-column:1/-1}}
+body{margin:0;background:#f3f2fa;color:#19182a;font-family:Arial,sans-serif}
+header{background:#5b4bdb;color:white;padding:28px 20px}
+header small{color:#ddf56b;font-weight:bold;letter-spacing:2px}
+h1{font-size:clamp(38px,8vw,65px);margin:12px 0}
+header p{max-width:600px;line-height:1.6}
+main{max-width:1050px;margin:auto;padding:22px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.panel{background:white;border:1px solid #e5e2ef;border-radius:18px;padding:19px;margin-bottom:18px}
+h2{margin:0 0 8px}
+.sub,.note{color:#77758b;font-size:13px;line-height:1.5}
+input,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font:inherit;margin:5px 0}
+textarea{min-height:75px}
+button{background:#5b4bdb;color:white;border:0;border-radius:10px;padding:11px 15px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+.secondary{background:#eee;color:#25233a}
+.fight{background:#5b4bdb;color:white;border-radius:14px;padding:18px;text-align:center;margin:14px 0}
+.fight strong{font-size:23px}
+.vote{display:flex;justify-content:space-between;align-items:center;border:1px solid #ddd;border-radius:12px;padding:13px;margin:9px 0}
+.post,.message,.feedback,.rank{background:#f5f4fa;padding:13px;border-radius:12px;margin:10px 0;overflow-wrap:anywhere}
+.post small{color:#5b4bdb;font-weight:bold}
+.post h3{margin:7px 0}
+.message strong,.feedback strong{display:block;font-size:12px;margin-bottom:5px}
+#chatMessages{height:260px;overflow:auto}
+.row{display:flex;gap:7px}
+.row input{flex:1;min-width:0}
+.status{font-size:12px;color:#777;margin-top:9px}
+footer{text-align:center;padding:25px;color:#777;font-size:12px}
+@media(max-width:700px){main{grid-template-columns:1fr;padding:13px}.panel{padding:15px}}
 </style>
 </head>
 <body>
-<div id="app">
 <header>
-<div class="topline">
-<div class="brand">YASMINA SHOWDOWN ✳</div>
-<div class="live">● THE FIGHT IS ON</div>
-</div>
-<div class="hero">
-<div class="eyebrow">The fictional rivalry continues</div>
+<small>THE FICTIONAL RIVALRY CONTINUES</small>
 <h1>YASMINA<br>SHOWDOWN.</h1>
-<p>Mr Osama vs Mr Ali. Follow the latest announcements, react to sneak peeks, and make your prediction while this legendary fictional showdown is still unfolding.</p>
-</div>
+<p>Mr Osama vs Mr Ali. Follow announcements, share your theories, and vote for your winner!</p>
 </header>
 
 <main>
-<div class="grid">
-<section class="panel">
-<div class="chat-head">
 <div>
-<h2>Latest announcements</h2>
-<p class="sub">Official updates, big moments and sneak peeks.</p>
-</div>
-<span class="pill">SHOWDOWN NEWS</span>
-</div>
-<div class="announcement-list" id="announcementList">
-<article class="announcement">
-<span class="tag">Welcome</span>
-<h3>The Yasmina Showdown is underway</h3>
-<p>Mr Osama vs Mr Ali. Keep checking here for new announcements and sneak peeks.</p>
-<div class="reaction">
-<button class="secondary" type="button" disabled>What do you think? — 0</button>
-</div>
-</article>
-</div>
-<p class="note">Demo version: updates are saved only on this device until we connect an online database.</p>
+<section class="panel">
+<h2>Latest announcements 📢</h2>
+<p class="sub">Official updates and sneak peeks.</p>
+<div id="announcements"><p class="sub">Loading announcements...</p></div>
 </section>
 
 <section class="panel">
-<div class="chat-head">
-<div>
-<h2>Showdown chat</h2>
-<p class="sub">Discuss the latest moments and theories. Keep it friendly.</p>
-</div>
-<span class="pill">DEMO</span>
-</div>
-<div class="name-row">
+<h2>Showdown chat 💬</h2>
+<p class="sub">Discuss the latest moments. Keep it friendly.</p>
 <input id="chatName" maxlength="20" placeholder="Your nickname">
-</div>
-<div class="messages" id="messages" aria-live="polite">
-<div class="msg"><strong>Showdown Updates</strong><span>Welcome to the Yasmina Showdown. Mr Osama vs Mr Ali is still unfolding!</span></div>
-<div class="msg"><strong>Showdown Updates</strong><span>Check the announcements, react to sneak peeks, then defend your prediction in chat.</span></div>
-</div>
-<form class="chat-form" id="chatForm">
+<div id="chatMessages">Loading chat...</div>
+<form id="chatForm">
+<div class="row">
 <input id="chatInput" maxlength="240" placeholder="Write a message..." required>
-<button type="submit">Send ↗</button>
+<button>Send</button>
+</div>
 </form>
-<p class="note">Chat is a local demo for now. We'll connect shared chat later.</p>
+<p class="status" id="chatStatus"></p>
 </section>
+</div>
 
-<div class="side">
+<div>
 <section class="panel">
-<h2>Who wins?</h2>
-<p class="sub">Cast your prediction for the fictional fight.</p>
-<div class="fight-card">
-<small>MAIN EVENT · FICTIONAL</small>
-<div class="fighters">
-<div class="fighter">MR OSAMA</div>
-<div class="vs">VS</div>
-<div class="fighter">MR ALI</div>
+<h2>Who wins? 🏆</h2>
+<div class="fight"><small>MAIN EVENT</small><br><strong>MR OSAMA VS MR ALI</strong></div>
+<div class="vote">
+<strong>🟣 Mr Osama</strong>
+<span id="osamaCount">0 votes</span>
+<button type="button" onclick="vote('Osama')">Vote</button>
 </div>
+<div class="vote">
+<strong>🟢 Mr Ali</strong>
+<span id="aliCount">0 votes</span>
+<button type="button" onclick="vote('Ali')">Vote</button>
 </div>
-<div class="vote-option" id="voteOsama" role="button" tabindex="0">
-<strong>🟣 Mr Osama</strong><small id="osamaCount">0 votes</small>
-</div>
-<div class="bar"><span id="osamaBar"></span></div>
-<div class="vote-option" id="voteAli" role="button" tabindex="0">
-<strong>🟢 Mr Ali</strong><small id="aliCount">0 votes</small>
-</div>
-<div class="bar"><span id="aliBar"></span></div>
-<p class="note" id="voteNote">Votes reset when this page is refreshed.</p>
+<p class="status" id="voteStatus">Votes are shared online.</p>
 </section>
 
 <section class="panel">
-<h2>Feedback box</h2>
-<p class="sub">Got an idea for the Yasmina Showdown site? Leave it here.</p>
-<form class="feedback-form" id="feedbackForm">
+<h2>Feedback box 💡</h2>
+<p class="sub">Got an idea for the website?</p>
+<form id="feedbackForm">
 <input id="feedbackName" maxlength="20" placeholder="Your nickname">
-<textarea id="feedbackText" maxlength="400" placeholder="What should we add or change?" required></textarea>
-<button class="lime" type="submit">Send feedback</button>
+<textarea id="feedbackText" maxlength="400" placeholder="Your idea..." required></textarea>
+<button>Send feedback</button>
 </form>
-<div class="feedback-list" id="feedbackList"></div>
+<div id="feedbackList"></div>
 </section>
 
 <section class="panel">
-<h2>Hall of rankings</h2>
-<p class="sub">The official leaderboard. Only the owner should award points.</p>
-<div class="rank-list" id="rankList">
-<div class="rank-row"><span class="rank-num">—</span><span class="rank-name">No rankings yet</span><span class="rank-score">★</span></div>
-</div>
-<div style="margin-top:14px">
-<button class="secondary" id="ownerLogin">Owner controls 🔒</button>
-</div>
-<div class="owner-box" id="ownerBox" hidden>
-<p class="sub">Owner mode · publish updates and award points.</p>
-<div class="feedback-form">
-<select id="postType">
-<option>Announcement</option>
-<option>Sneak Peek</option>
-<option>Big Moment</option>
-</select>
-<input id="postTitle" maxlength="70" placeholder="Post title">
-<textarea id="postBody" maxlength="500" placeholder="What happened? What do you want everyone to think about?"></textarea>
-<button class="lime" id="publishPost" type="button">Publish update</button>
-</div>
-<p class="sub" style="margin-top:16px">Award ranking points</p>
-<div class="owner-controls">
-<input id="rankFriend" maxlength="20" placeholder="Friend's name">
-<input id="rankPoints" type="number" min="1" max="1000" value="10">
-<button id="addPoints">Award</button>
-</div>
-<div class="owner-status" id="ownerStatus">This is a demo owner control, not secure yet.</div>
-</div>
+<h2>Hall of rankings ⭐</h2>
+<p class="sub">Official leaderboard.</p>
+<div id="rankings">Loading rankings...</div>
+<p class="note">Rankings are managed by the site owner.</p>
 </section>
-</div>
 </div>
 </main>
+
 <footer>YASMINA SHOWDOWN · Follow the fictional rivalry.</footer>
-</div>
 
 <script>
-const $=id=>document.getElementById(id);
-const messages=$('messages');
+const SUPABASE_URL = 'https://huqzhkfxknnamyqrvecx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Xq-efPMw3gWmm4CU2_ZNtA_KQ2q6cmk';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-$('chatForm').addEventListener('submit',e=>{
-e.preventDefault();
-const name=$('chatName').value.trim()||'Guest';
-const value=$('chatInput').value.trim();
-if(!value)return;
-const bubble=document.createElement('div');
-bubble.className='msg mine';
-const author=document.createElement('strong');
-author.textContent=name;
-const body=document.createElement('span');
-body.textContent=value;
-bubble.append(author,body);
-messages.appendChild(bubble);
-messages.scrollTop=messages.scrollHeight;
-$('chatInput').value='';
-});
+const el = id => document.getElementById(id);
+const safe = value => String(value ?? '');
 
-let votes={Osama:0,Ali:0},myVote=null;
-function vote(who){
-if(myVote){
-$('voteNote').textContent='You already voted for Mr '+myVote+' in this preview.';
-return;
+function showError(where,error){
+  console.error(where,error);
+  el(where).textContent = 'Could not load this section. Please refresh.';
 }
-myVote=who;
-votes[who]++;
-const total=votes.Osama+votes.Ali;
-$('osamaCount').textContent=votes.Osama+' vote'+(votes.Osama===1?'':'s');
-$('aliCount').textContent=votes.Ali+' vote'+(votes.Ali===1?'':'s');
-$('osamaBar').style.width=(votes.Osama/total*100)+'%';
-$('aliBar').style.width=(votes.Ali/total*100)+'%';
-$('voteOsama').classList.toggle('selected',who==='Osama');
-$('voteAli').classList.toggle('selected',who==='Ali');
-$('voteNote').textContent='Your vote: Mr '+who+'. Thanks for voting!';
-}
-$('voteOsama').addEventListener('click',()=>vote('Osama'));
-$('voteAli').addEventListener('click',()=>vote('Ali'));
-['voteOsama','voteAli'].forEach(id=>$(id).addEventListener('keydown',e=>{
-if(e.key==='Enter'||e.key===' '){e.preventDefault();$(id).click();}
-}));
 
-$('feedbackForm').addEventListener('submit',e=>{
-e.preventDefault();
-const value=$('feedbackText').value.trim();
-if(!value)return;
-const item=document.createElement('div');
-item.className='feedback-item';
-const who=document.createElement('strong');
-who.textContent=$('feedbackName').value.trim()||'Anonymous';
-const note=document.createElement('span');
-note.textContent=value;
-item.append(who,note);
-$('feedbackList').prepend(item);
-$('feedbackText').value='';
-});
+async function loadAnnouncements(){
+  const {data,error}=await db.from('announcements')
+    .select('id,title,body,post_type,created_at')
+    .order('created_at',{ascending:false});
+  if(error) return showError('announcements',error);
+  const box=el('announcements');
+  box.replaceChildren();
+  if(!data.length){
+    box.textContent='No announcements yet. Check back soon!';
+    return;
+  }
+  data.forEach(post=>{
+    const article=document.createElement('article');
+    article.className='post';
+    const tag=document.createElement('small');
+    tag.textContent=safe(post.post_type);
+    const title=document.createElement('h3');
+    title.textContent=safe(post.title);
+    const body=document.createElement('p');
+    body.textContent=safe(post.body);
+    article.append(tag,title,body);
+    box.append(article);
+  });
+}
 
-let rankings=[],ownerUnlocked=false;
-$('ownerLogin').addEventListener('click',()=>{
-if(ownerUnlocked){
-ownerUnlocked=false;
-$('ownerBox').hidden=true;
-$('ownerLogin').textContent='Owner controls 🔒';
-return;
+async function loadChat(){
+  const {data,error}=await db.from('chat_messages')
+    .select('nickname,message,created_at')
+    .order('created_at',{ascending:true}).limit(70);
+  if(error) return showError('chatMessages',error);
+  const box=el('chatMessages');
+  box.replaceChildren();
+  data.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='message';
+    const name=document.createElement('strong');
+    name.textContent=safe(item.nickname);
+    const msg=document.createElement('span');
+    msg.textContent=safe(item.message);
+    div.append(name,msg);
+    box.append(div);
+  });
+  box.scrollTop=box.scrollHeight;
 }
-const pin=prompt('Enter demo owner PIN: 2468');
-if(pin==='2468'){
-ownerUnlocked=true;
-$('ownerBox').hidden=false;
-$('ownerLogin').textContent='Lock owner controls 🔓';
-}else if(pin!==null){
-$('ownerStatus').textContent='That PIN was not correct.';
-}
-});
 
-$('publishPost').addEventListener('click',()=>{
-if(!ownerUnlocked)return;
-const title=$('postTitle').value.trim();
-const body=$('postBody').value.trim();
-if(!title||!body){
-$('ownerStatus').textContent='Add a title and update text before publishing.';
-return;
-}
-const article=document.createElement('article');
-article.className='announcement';
-const tag=document.createElement('span');
-tag.className='tag';
-tag.textContent=$('postType').value;
-const heading=document.createElement('h3');
-heading.textContent=title;
-const copy=document.createElement('p');
-copy.textContent=body;
-const reaction=document.createElement('div');
-reaction.className='reaction';
-const button=document.createElement('button');
-button.className='secondary';
-button.type='button';
-button.textContent='What do you think? — 0';
-let count=0;
-button.addEventListener('click',()=>{
-count++;
-button.textContent='What do you think? — '+count;
-});
-reaction.append(button);
-article.append(tag,heading,copy,reaction);
-$('announcementList').prepend(article);
-$('postTitle').value='';
-$('postBody').value='';
-$('ownerStatus').textContent='Update published in this demo.';
+el('chatForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const nickname=el('chatName').value.trim()||'Guest';
+  const message=el('chatInput').value.trim();
+  if(!message)return;
+  const button=event.submitter;
+  button.disabled=true;
+  el('chatStatus').textContent='Sending...';
+  const {error}=await db.from('chat_messages').insert({nickname,message});
+  button.disabled=false;
+  if(error){
+    el('chatStatus').textContent='Message not sent. Please try again.';
+    console.error(error);
+    return;
+  }
+  el('chatInput').value='';
+  el('chatStatus').textContent='Message sent!';
+  await loadChat();
 });
 
-$('addPoints').addEventListener('click',()=>{
-if(!ownerUnlocked)return;
-const name=$('rankFriend').value.trim();
-const points=Number($('rankPoints').value);
-if(!name||!Number.isInteger(points)||points<1||points>1000){
-$('ownerStatus').textContent='Enter a name and points from 1 to 1000.';
-return;
+let voting=false;
+async function vote(choice){
+  if(voting)return;
+  voting=true;
+  el('voteStatus').textContent='Saving your vote...';
+  const {error}=await db.from('votes').insert({choice});
+  voting=false;
+  if(error){
+    el('voteStatus').textContent='Vote could not be saved.';
+    console.error(error);
+    return;
+  }
+  el('voteStatus').textContent='Your vote has been counted!';
+  await loadVotes();
 }
-const existing=rankings.find(row=>row.name.toLowerCase()===name.toLowerCase());
-if(existing)existing.points+=points;
-else rankings.push({name,points});
-rankings.sort((a,b)=>b.points-a.points);
-$('rankList').replaceChildren();
-rankings.forEach((row,index)=>{
-const line=document.createElement('div');
-line.className='rank-row';
-const pos=document.createElement('span');
-pos.className='rank-num';
-pos.textContent='#'+(index+1);
-const who=document.createElement('span');
-who.className='rank-name';
-who.textContent=row.name;
-const score=document.createElement('span');
-score.className='rank-score';
-score.textContent=row.points+' pts';
-line.append(pos,who,score);
-$('rankList').append(line);
+window.vote=vote;
+
+async function loadVotes(){
+  const {data,error}=await db.from('votes').select('choice');
+  if(error)return showError('voteStatus',error);
+  const osama=data.filter(v=>v.choice==='Osama').length;
+  const ali=data.filter(v=>v.choice==='Ali').length;
+  el('osamaCount').textContent=osama+' votes';
+  el('aliCount').textContent=ali+' votes';
+}
+
+el('feedbackForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const nickname=el('feedbackName').value.trim()||'Anonymous';
+  const message=el('feedbackText').value.trim();
+  if(!message)return;
+  const button=event.submitter;
+  button.disabled=true;
+  const {error}=await db.from('feedback').insert({nickname,message});
+  button.disabled=false;
+  if(error){
+    alert('Feedback could not be sent. Please try again.');
+    console.error(error);
+    return;
+  }
+  el('feedbackText').value='';
+  await loadFeedback();
 });
-$('rankFriend').value='';
-$('ownerStatus').textContent='Points awarded in this demo.';
-});
+
+async function loadFeedback(){
+  const {data,error}=await db.from('feedback')
+    .select('nickname,message,created_at')
+    .order('created_at',{ascending:false}).limit(20);
+  if(error)return showError('feedbackList',error);
+  const box=el('feedbackList');
+  box.replaceChildren();
+  data.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='feedback';
+    const name=document.createElement('strong');
+    name.textContent=safe(item.nickname);
+    const msg=document.createElement('span');
+    msg.textContent=safe(item.message);
+    div.append(name,msg);
+    box.append(div);
+  });
+}
+
+async function loadRankings(){
+  const {data,error}=await db.from('rankings')
+    .select('nickname,points').order('points',{ascending:false});
+  if(error)return showError('rankings',error);
+  const box=el('rankings');
+  box.replaceChildren();
+  if(!data.length){box.textContent='No rankings yet.';return;}
+  data.forEach((item,index)=>{
+    const div=document.createElement('div');
+    div.className='rank';
+    div.textContent='#'+(index+1)+'  '+safe(item.nickname)+' — '+item.points+' pts';
+    box.append(div);
+  });
+}
+
+async function start(){
+  const results=await Promise.allSettled([
+    loadAnnouncements(),loadChat(),loadVotes(),
+    loadFeedback(),loadRankings()
+  ]);
+  console.log('Yasmina Showdown connected to Supabase.',results);
+}
+start();
+
+// Refresh shared information regularly for visitors.
+setInterval(()=>{
+  loadAnnouncements();
+  loadChat();
+  loadVotes();
+  loadFeedback();
+  loadRankings();
+},10000);
 </script>
 </body>
 </html>
